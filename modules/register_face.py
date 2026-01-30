@@ -2,7 +2,7 @@ import cv2
 import face_recognition
 import numpy as np
 import os
-from config import CAMERA_INDEX, FACE_SAMPLES, DATA_PATH
+from modules.config import CAMERA_INDEX, FACE_SAMPLES, DATA_PATH
 
 def register_user(user_id):
     os.makedirs(DATA_PATH, exist_ok=True)
