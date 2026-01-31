@@ -21,7 +21,7 @@ def recognize():
     liveness = LivenessDetector()
     marked_users = set()
 
-    cap = cv2.VideoCapture(CAMERA_INDEX)
+    cap = cv2.VideoCapture(CAMERA_INDEX, cv2.CAP_DSHOW)
     print("Face Recognition Started (Press Q to exit)")
 
     while True:

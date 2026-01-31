@@ -1,7 +1,7 @@
 import cv2
 from config import CAMERA_INDEX
 
-cap = cv2.VideoCapture(CAMERA_INDEX)
+cap = cv2.VideoCapture(CAMERA_INDEX, cv2.CAP_DSHOW)
 
 if not cap.isOpened():
     print("Error: Could not open camera.")

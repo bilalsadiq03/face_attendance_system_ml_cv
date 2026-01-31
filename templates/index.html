@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Face Attendance System</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding-top: 80px;
+        }
+        input {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: none;
+        }
+        button {
+            padding: 15px 30px;
+            margin: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .register { background: #22c55e; }
+        .attendance { background: #3b82f6; }
+    </style>
+</head>
+<body>
+
+<h1>Face Authentication Attendance System</h1>
+
+<form action="/register" method="post">
+    <input type="text" name="user_id" placeholder="Enter User Name" required />
+    <br/>
+    <button class="register" type="submit">Register Face</button>
+</form>
+
+<form action="/start-attendance">
+    <button class="attendance">Start Attendance</button>
+</form>
+
+<p>Camera will open in a new window</p>
+
+</body>
+</html>

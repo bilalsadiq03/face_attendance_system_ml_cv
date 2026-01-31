@@ -7,7 +7,7 @@ from modules.config import CAMERA_INDEX, FACE_SAMPLES, DATA_PATH
 def register_user(user_id):
     os.makedirs(DATA_PATH, exist_ok=True)
 
-    cap = cv2.VideoCapture(CAMERA_INDEX)
+    cap = cv2.VideoCapture(CAMERA_INDEX, cv2.CAP_DSHOW)
     encodings  = []
 
     print("Face registration Started. Please look at the camera.")
