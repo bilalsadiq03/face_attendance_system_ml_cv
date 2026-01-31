@@ -4,6 +4,7 @@ import numpy as np
 from modules.face_database import FaceDatabase
 from modules.config import CAMERA_INDEX, FACE_MATCH_THRESHOLD
 from modules.attendance_manager import AttendanceManager
+from modules.preprocess import normalize_lightening
 
 
 def recognize():
@@ -26,7 +27,7 @@ def recognize():
         if not ret:
             continue
 
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        rgb = normalize_lightening(frame)
         face_locations = face_recognition.face_locations(rgb)
         face_encodings = face_recognition.face_encodings(rgb, face_locations)
 
