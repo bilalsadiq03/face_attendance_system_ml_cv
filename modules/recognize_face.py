@@ -5,6 +5,7 @@ from modules.face_database import FaceDatabase
 from modules.config import CAMERA_INDEX, FACE_MATCH_THRESHOLD
 from modules.attendance_manager import AttendanceManager
 from modules.preprocess import normalize_lightening
+from modules.liveness import LivenessDetector
 
 
 def recognize():
@@ -21,6 +22,8 @@ def recognize():
 
     attendance = AttendanceManager()
     marked_users = set()
+
+    liveness = LivenessDetector()
 
     while True:
         ret, frame = cap.read()
@@ -58,6 +61,21 @@ def recognize():
 
             if min_dist < FACE_MATCH_THRESHOLD:
                 name = db.user_ids[best_match_index]
+
+            is_live = liveness.check_liveness(frame)
+
+            if not is_live:
+                cv2.putText(
+                    frame,
+                    "Blink to verify liveness",
+                    (20, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.8,
+                    (0, 0, 255),
+                    2
+                )
+            continue
+
 
             if name not in marked_users:
                 status = attendance.mark_attendance(name)
