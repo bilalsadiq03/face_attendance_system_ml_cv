@@ -3,6 +3,8 @@ import face_recognition
 import numpy as np
 from modules.face_database import FaceDatabase
 from modules.config import CAMERA_INDEX, FACE_MATCH_THRESHOLD
+from modules.attendance_manager import AttendanceManager
+
 
 def recognize():
     db = FaceDatabase()
@@ -15,6 +17,9 @@ def recognize():
     cap = cv2.VideoCapture(CAMERA_INDEX)
 
     print("Face Recognition Started (Press Q to exit)")
+
+    attendance = AttendanceManager()
+    marked_users = set()
 
     while True:
         ret, frame = cap.read()
@@ -49,6 +54,14 @@ def recognize():
                 color,
                 2
             )
+
+            if min_dist < FACE_MATCH_THRESHOLD:
+                name = db.user_ids[best_match_index]
+
+            if name not in marked_users:
+                status = attendance.mark_attendance(name)
+                print(f"{name}: {status}")
+                marked_users.add(name)
 
         cv2.imshow("Face Recognition", frame)
 
