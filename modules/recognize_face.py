@@ -1,11 +1,12 @@
 import cv2
-import face_recognition
 import numpy as np
+import face_recognition
+
 from modules.face_database import FaceDatabase
-from modules.config import CAMERA_INDEX, FACE_MATCH_THRESHOLD
 from modules.attendance_manager import AttendanceManager
-from modules.preprocess import normalize_lightening
 from modules.liveness import LivenessDetector
+from modules.preprocess import normalize_lightening
+from modules.config import CAMERA_INDEX, FACE_MATCH_THRESHOLD
 
 
 def recognize():
@@ -13,24 +14,25 @@ def recognize():
     db.load_database()
 
     if db.is_empty():
-        print(" No registered users found")
+        print("No registered users found")
         return
 
-    cap = cv2.VideoCapture(CAMERA_INDEX)
-
-    print("Face Recognition Started (Press Q to exit)")
-
     attendance = AttendanceManager()
+    liveness = LivenessDetector()
     marked_users = set()
 
-    liveness = LivenessDetector()
+    cap = cv2.VideoCapture(CAMERA_INDEX)
+    print("Face Recognition Started (Press Q to exit)")
 
     while True:
         ret, frame = cap.read()
         if not ret:
             continue
 
+        is_live = liveness.check_liveness(frame)
+
         rgb = normalize_lightening(frame)
+
         face_locations = face_recognition.face_locations(rgb)
         face_encodings = face_recognition.face_encodings(rgb, face_locations)
 
@@ -43,6 +45,24 @@ def recognize():
                 name = db.user_ids[best_match_index]
                 color = (0, 255, 0)
                 label = f"{name} ({min_dist:.2f})"
+
+                if not is_live:
+                    cv2.putText(
+                        frame,
+                        "Blink to verify liveness",
+                        (20, 40),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.8,
+                        (0, 0, 255),
+                        2
+                    )
+                else:
+                    if name not in marked_users:
+                        status = attendance.mark_attendance(name)
+                        print(f"{name}: {status}")
+                        marked_users.add(name)
+                        liveness.reset()
+
             else:
                 name = "Unknown"
                 color = (0, 0, 255)
@@ -59,36 +79,14 @@ def recognize():
                 2
             )
 
-            if min_dist < FACE_MATCH_THRESHOLD:
-                name = db.user_ids[best_match_index]
-
-            is_live = liveness.check_liveness(frame)
-
-            if not is_live:
-                cv2.putText(
-                    frame,
-                    "Blink to verify liveness",
-                    (20, 40),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.8,
-                    (0, 0, 255),
-                    2
-                )
-            continue
-
-
-            if name not in marked_users:
-                status = attendance.mark_attendance(name)
-                print(f"{name}: {status}")
-                marked_users.add(name)
-
-        cv2.imshow("Face Recognition", frame)
+        cv2.imshow("Face Authentication Attendance", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     recognize()

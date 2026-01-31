@@ -1,7 +1,7 @@
 import cv2
 import dlib
 import numpy as np
-from scipy.spatial import distance
+
 
 # Load facial landmark detector
 detector = dlib.get_frontal_face_detector()
@@ -12,19 +12,26 @@ predictor = dlib.shape_predictor(
 LEFT_EYE = [36, 37, 38, 39, 40, 41]
 RIGHT_EYE = [42, 43, 44, 45, 46, 47]
 
-EAR_THRESHOLD = 0.23
+EAR_THRESHOLD = 0.26
 BLINK_FRAMES = 2
 
 
+def euclidean(p1, p2):
+    return np.linalg.norm(p1 - p2)
+
 def eye_aspect_ratio(eye):
-    A = distance.euclidean(eye[1], eye[5])
-    B = distance.euclidean(eye[2], eye[4])
-    C = distance.euclidean(eye[0], eye[3])
+    A = euclidean(eye[1], eye[5])
+    B = euclidean(eye[2], eye[4])
+    C = euclidean(eye[0], eye[3])
     return (A + B) / (2.0 * C)
 
 
 class LivenessDetector:
     def __init__(self):
+        self.counter = 0
+        self.blinked = False
+
+    def reset(self):
         self.counter = 0
         self.blinked = False
 
