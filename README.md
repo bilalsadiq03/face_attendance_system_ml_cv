@@ -140,6 +140,7 @@ Register User:
 python modules/register_face.py
 ```
 Start Attendance:
+```bash
 python main.py
 ```
 
